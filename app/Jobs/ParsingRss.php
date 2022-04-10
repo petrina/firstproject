@@ -43,6 +43,12 @@ class ParsingRss implements ShouldQueue
         
         for ($i = 0; $i < count($match[0]); $i++) {
 
+            $existPost = Post::where(['link' => $match['link'][$i]])->first()->toArray();
+
+            if (!empty($existPost)) {
+                break;
+            }
+
             $pubdate = \DateTime::createFromFormat('D, d M Y H:i:s e', $match['pubdate'][$i]);
 
             $post = new Post;
