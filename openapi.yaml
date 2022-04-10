@@ -1,0 +1,185 @@
+openapi: "3.0.2"
+info:
+  title: "Lifehacker Rss Parser REST API"
+  description: "Simple Rest Api"
+  version: "1.0"
+  contact:
+    name: "Oleksandr Petryna"
+servers:
+- url: "http://127.0.0.1:8080/api"
+paths:
+  /posts:
+    get:
+      tags: 
+      - "Posts"
+      summary: "show all record"
+      operationId: "posts.index"
+      responses:
+        200:
+          description: "Successful response"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostModel"
+        404:
+          description: "Posts Not Found"
+
+    post:
+      tags:
+      - "Posts"
+      summary: "create new record"
+      operationId: "post.create"
+      requestBody:
+        $ref: "#/components/requestBodies/createpost"
+      responses:
+        201:
+          description: "Post create"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostModel"
+        404:
+          description: "Required field not found"
+
+  /posts/{id}:
+    get:
+      tags:
+      - "Posts"
+      summary: "show current record"
+      operationId: "posts.store"
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        200:
+          description: "Successful response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostModel"
+        404:
+          description: "Post not found"
+          
+    put:
+      tags:
+      - "Posts"
+      summary: "update current record"
+      operationId: "posts.update"
+      parameters:
+        - $ref: "#/components/parameters/id"
+      requestBody:
+        $ref: "#/components/requestBodies/updatepost"
+      responses:
+        200:
+          description: "Successful response"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostModel"
+        404:
+          description: "Posts Not Found"
+          
+    delete:
+      tags:
+      - "Posts"
+      summary: "delete post"
+      operationId: "posts.delete"
+      parameters:
+        - $ref: "#/components/parameters/id"
+      responses:
+        204:
+          description: "remove record"
+        404:
+          description: "Posts Not Found"
+
+components:
+  schemas:
+    id:
+      type: integer
+    title:
+      type: string
+      example: "new  record title"
+    link:
+      type: string
+      example: "https://google.com"
+    description:
+      type: string
+      example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras at mollis sem. Sed in tellus id erat imperdiet consequat in eget arcu. Nulla tempus eget massa at aliquam. Cras augue urna, euismod id erat at, malesuada varius ex. Aliquam ullamcorper augue sem, vel suscipit mi consequat vel. Nunc a velit ut libero blandit posuere ut vitae lacus. Curabitur eros augue, malesuada vitae congue at, vehicula non justo. Praesent fringilla vel neque quis auctor. Mauris ultrices rhoncus dictum. Integer sed nisl eget tortor suscipit convallis. Quisque eget quam lorem. Sed eleifend placerat massa, non fermentum quam fringilla eget. Proin feugiat bibendum condimentum. Cras id luctus massa. In ut nunc faucibus, vestibulum augue quis, efficitur eros."
+    creator:
+      type: "string"
+      example: "Jhon Smit"
+    pubdate: 
+      type: "string"
+      format: "date-time"
+      example: "2022-04-09 21:31:00"
+    PostModel:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/id"
+        title: 
+          $ref: "#/components/schemas/title"
+        link: 
+          $ref: "#/components/schemas/link"
+        description:
+          $ref: "#/components/schemas/description"
+        creator: 
+          $ref: "#/components/schemas/creator"
+        pubdate: 
+          $ref: "#/components/schemas/pubdate"
+        created_at: 
+          type: "string"
+          format: "date-time"
+        updated_at: 
+          type: "string"
+          format: "date-time"
+
+  requestBodies:
+    createpost:
+      description: create post
+      content: 
+        'application/json':
+          schema:
+            type: "object"
+            required:
+            - "title"
+            - "link"
+            properties:
+              title: 
+                $ref: "#/components/schemas/title"
+              link: 
+                $ref: "#/components/schemas/link"
+              description:
+                $ref: "#/components/schemas/description"
+              creator: 
+                $ref: "#/components/schemas/creator"
+              pubdate: 
+                $ref: "#/components/schemas/pubdate"
+    updatepost:
+      description: update post
+      content: 
+        'application/json':
+          schema:
+            type: "object"
+            properties:
+              title: 
+                $ref: "#/components/schemas/title"
+              link: 
+                $ref: "#/components/schemas/link"
+              description:
+                $ref: "#/components/schemas/description"
+              creator: 
+                $ref: "#/components/schemas/creator"
+              pubdate: 
+                $ref: "#/components/schemas/pubdate"
+  parameters:
+    id: 
+      name: "id"
+      in: "path"
+      description: "post id"
+      required: true
+      schema:
+        $ref: "#/components/schemas/title"
