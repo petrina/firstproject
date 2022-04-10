@@ -12,7 +12,7 @@ Getting Started
 
 `git clone git@github.com:petrina/firstproject.git`
 
-3. Create DataBase
+2. Create DataBase
 
 I use mysql 
 
@@ -24,7 +24,7 @@ and
 
 You can use something else.
 
-4. Fill Config
+3. Fill Config
 
 Fill next params in .env file:
     - DB_CONNECTION
@@ -36,7 +36,7 @@ and change
 
 `QUEUE_CONNECTION=database`
 
-5. Migration
+4. Migration
 
 Fill DataBase next command:
 
