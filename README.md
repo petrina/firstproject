@@ -27,6 +27,7 @@ You can use something else.
 3. Fill Config
 
 Fill next params in .env file:
+
     - DB_CONNECTION
     - DB_DATABASE
     - DB_USERNAME
