@@ -69,10 +69,12 @@ if this your first running
 
 `docker-compose up`
 
-Open new terminal and execute
+after this open new terminal and execute
 
 `docker exec -it firstproj bash`
+
 `php artisan migrate`
+
 `exit`
 
 You can use next address
