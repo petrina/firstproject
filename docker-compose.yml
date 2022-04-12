@@ -1,49 +1,43 @@
-version: "3.7"
+version: "3"
 services:
-  app:
-    build:
-      args:
-        user: sammy
-        uid: 1000
-      context: ./
-      dockerfile: Dockerfile
-    image: firstproject
-    container_name: firstproject-app
-    restart: unless-stopped
-    working_dir: /var/www/
-    volumes:
-      - ./:/var/www
-    networks:
-      - firstproject
 
-  db:
+  mysql-db:
     image: mysql
-    container_name: firstproject-db
-    restart: unless-stopped
+    restart: always
+    container_name: firstproj-db
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME}
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      MYSQL_DATABASE: ${DB_DATABASE}
     volumes:
-      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
-    networks:
-      - firstproject
+      - database:/var/lib/mysql
 
-  nginx:
-    image: nginx:alpine
-    container_name: firstproject-nginx
-    restart: unless-stopped
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
     ports:
       - 8080:8080
-    volumes:
-      - ./:/var/www
-      - ./docker-compose/nginx:/etc/nginx/conf.d/
-    networks:
-      - firstproject
+    links:
+      - mysql-db
 
-networks:
   firstproject:
-    driver: bridge
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: firstproject:lrv
+    container_name: firstproj
+    restart: always
+    working_dir: /var/www/
+    volumes:
+      - .:/var/www
+    links:
+      - mysql-db
+    ports:
+      - 8000:8000
+    command:
+      php artisan serve --port=8000 --host=0.0.0.0
+
+volumes:
+  database:
+    external: true
