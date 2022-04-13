@@ -14,6 +14,7 @@ services:
   adminer:
     image: adminer
     restart: always
+    container_name: firstproj-adm
     environment:
       ADMINER_DEFAULT_SERVER: mysql
     ports:
@@ -33,10 +34,22 @@ services:
       - .:/var/www
     links:
       - mysql-db
+      - nginx
     ports:
       - 8000:8000
     command:
       php artisan serve --port=8000 --host=0.0.0.0
+      # service apache2 restart
+  
+  nginx:
+    image: nginx
+    container_name: firstproj-nginx
+    restart: unless-stopped
+    ports:
+      - 3000:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx.conf:/etc/nginx/sites-enabled/default
 
 volumes:
   database:
