@@ -35,31 +35,50 @@ class ParsingRss implements ShouldQueue
     {
         $response = Http::get('https://lifehacker.com/rss');
         $rssData = $response->body();
-        \preg_match_all('/<title><!\[CDATA\[(?<title>.*?)\]\]><\/title>'.
-            '<link>(?<link>.*?)<\/link>'.
-            '<description><!\[CDATA\[(?<description>.*?)\]\]><\/description>.*?'.
-            '<pubDate>(?<pubdate>.*?)<\/pubDate>.*?'.
-            '<dc:creator><!\[CDATA\[(?<creator>.*?)\]\]><\/dc:creator>/is', $rssData, $match);
-        
-        for ($i = 0; $i < count($match[0]); $i++) {
 
-            $existPost = Post::where(['link' => $match['link'][$i]])->first()->toArray();
+        $doc = new \DOMDocument();
+        $doc->loadXML($rssData);
 
-            if (!empty($existPost)) {
-                break;
+        $destinations = $doc->getElementsByTagName("item");
+        foreach ($destinations as $destination) {
+            $post = new Post();
+
+            $exist = true;
+
+            foreach($destination->childNodes as $child) {
+
+                $tagName = $child->tagName;
+                $value = $child->textContent;
+                
+                if ($tagName == 'category' || $tagName == 'guid') {
+                    continue;
+                }
+
+                if ($tagName == 'link') {
+                    $exist = Post::where('link', '=', $value)->exists();
+
+                    if ($exist) {
+                        break;
+                    }
+                }
+
+                if ($tagName == 'dc:creator') {
+                    $tagName = 'creator';
+                }
+
+                if ($tagName == 'pubDate') {
+                    $tagName = 'pubdate';
+                    $pubdate = \DateTime::createFromFormat('D, d M Y H:i:s e', $value);
+                    $value = $pubdate->format('Y-m-d H:i:s');
+                }
+                
+                $post->{$tagName} = $value;
+
             }
-
-            $pubdate = \DateTime::createFromFormat('D, d M Y H:i:s e', $match['pubdate'][$i]);
-
-            $post = new Post;
-            $post->title = $match['title'][$i];
-            $post->link = $match['link'][$i];
-            $post->description = $match['description'][$i];
-            $post->pubdate = $pubdate->format('Y-m-d H:i:s');
-            $post->creator = $match['creator'][$i];
-
-            $post->save();
-
+            
+            if (!$exist) {
+                $post->save();
+            }
         }
     }
 }
