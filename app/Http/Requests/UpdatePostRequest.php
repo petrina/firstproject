@@ -24,7 +24,11 @@ class UpdatePostRequest extends FormRequest
     public function rules()
     {
         return [
-            
+            'title' => ['required', 'max:255', 'min:5'],
+            'link' => ['required', 'unique:posts,link', 'max:255', 'min:5'],
+            'description' => ['required', 'min:5'],
+            'creator' => ['required', 'max:255', 'min:3'],
+            'pubdate' => ['required', 'date_format:Y-m-d H:i:s']
         ];
     }
 }
