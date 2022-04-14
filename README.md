@@ -81,6 +81,10 @@ You can use next address
 
 `http://0.0.0.0:8000/api/posts`
 
+### Swagger
+
+`http://localhost:8000/api/documentation/`
+
 #### P.S.
 
 if you want easy use db then insert
